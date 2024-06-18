@@ -3,7 +3,6 @@ import Result from "./components/Result";
 import Search from "./components/Search";
 import axios from "axios";
 
-//http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png
 function App() {
   const [search, setSearch] = useState("");
   const [weather, setWeather] = useState([]);
@@ -12,19 +11,6 @@ function App() {
   const changeSearch = (value) => {
     setSearch(value);
   };
-
-  // const getWeatherData = () => {
-  //   axios
-  //     .get(
-  //       `http://api.openweathermap.org/geo/1.0/direct?q=${search}&limit={limit}&appid={e673134dd5cd1fde9829fc573eb1de9b}`
-  //     )
-  //     .then((Response) => {
-  //       console.log(Response);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // };
 
   const searchWeatherHandler = () => {
     if (search !== "") {
@@ -44,10 +30,24 @@ function App() {
     }
   };
 
-  const historySearchHandler = (data) => {
+  const historySearchHandler = async (data) => {
     setSearch(data);
-    console.log(data);
-    searchWeatherHandler();
+
+    if (data !== "") {
+      axios
+        .get(
+          `http://api.openweathermap.org/data/2.5/weather?q=${search}&appid=e673134dd5cd1fde9829fc573eb1de9b&units=metric`
+        )
+        .then((Response) => {
+          if (history.indexOf(data) === -1) {
+            setHistory([...history, data]);
+          }
+          setWeather(Response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   };
   return (
     <>
@@ -70,6 +70,3 @@ function App() {
 }
 
 export default App;
-
-//http://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&limit={limit}&appid={e673134dd5cd1fde9829fc573eb1de9b}
-// max-w-[1240px]
